@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Sample SAM Template for dotnet-lambda-observability
+
+Globals:
+  Function:
+    Timeout: 10
+    Tracing: PassThrough
+    MemorySize: 512
+  Api:
+    TracingEnabled: True
+
+Resources:
+  ObservableLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./ObservableLambda/
+      Handler: ObservableLambda::ObservableLambda.Function::TracingFunctionHandler
+      Layers:
+        - arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-51-0:1
+      Runtime: dotnetcore3.1
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          TABLE_NAME: sample-table
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName: sample-table
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /observe-me
+            Method: get
+
+  SampleTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: sample-table
+
+Outputs:
+  ObservableLambdaApi:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/observe-me/"

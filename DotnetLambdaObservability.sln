@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda", "src\ObservableLambda\ObservableLambda.csproj", "{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Shared", "src\ObservableLambda.Shared\ObservableLambda.Shared.csproj", "{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.NativeAWS", "src\ObservableLambda.NativeAWS\ObservableLambda.NativeAWS.csproj", "{42587F39-C072-4037-992C-BB6B7026814D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.NativeAWS.Shared", "src\ObservableLambda.NativeAWS.Shared\ObservableLambda.NativeAWS.Shared.csproj", "{4791A115-1A9C-4B9C-839E-F8F73DD1D376}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42587F39-C072-4037-992C-BB6B7026814D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42587F39-C072-4037-992C-BB6B7026814D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42587F39-C072-4037-992C-BB6B7026814D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42587F39-C072-4037-992C-BB6B7026814D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47} = {778A42A1-220A-4775-A7C3-7432614598FA}
+		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64} = {778A42A1-220A-4775-A7C3-7432614598FA}
+		{42587F39-C072-4037-992C-BB6B7026814D} = {778A42A1-220A-4775-A7C3-7432614598FA}
+		{4791A115-1A9C-4B9C-839E-F8F73DD1D376} = {778A42A1-220A-4775-A7C3-7432614598FA}
+	EndGlobalSection
+EndGlobal
