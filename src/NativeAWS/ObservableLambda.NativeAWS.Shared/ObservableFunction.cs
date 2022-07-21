@@ -23,8 +23,8 @@ namespace ObservableLambda.NativeAWS.Shared
 
         public ObservableFunction()
         {
-            Tracing.Init();
             Logging.Init();
+
             this.Subscribe(new MetricObserver());
         }
 

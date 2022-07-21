@@ -4,16 +4,33 @@ using Amazon.XRay.Recorder.Handlers.AwsSdk;
 
 namespace ObservableLambda.NativeAWS.Shared
 {
-    public static class Tracing
-    {        
-        public static void Init()
+    public class Tracing
+    {
+        public Tracing()
         {
-            AWSXRayRecorder recorder = new AWSXRayRecorderBuilder().Build();
-            AWSXRayRecorder.InitializeInstance(recorder: recorder);
-
-            AWSSDKHandler.RegisterXRayForAllServices();
+            
         }
 
-        public static string CurrentTraceId => AWSXRayRecorder.Instance.GetEntity().TraceId;
+        public void BeginSegment(string name)
+        {
+            AWSXRayRecorder.Instance.BeginSegment(name);
+        }
+
+        public void BeginSubsegment(string name)
+        {
+            AWSXRayRecorder.Instance.BeginSubsegment(name);
+        }
+
+        public void EndSubsegment()
+        {
+            AWSXRayRecorder.Instance.EndSubsegment();
+        }
+
+        public void EndSegment()
+        {
+            AWSXRayRecorder.Instance.EndSegment();
+        }
+
+        public string CurrentTraceId => AWSXRayRecorder.Instance.GetEntity().TraceId;
     }
 }
