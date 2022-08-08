@@ -25,9 +25,5 @@
   <ItemGroup>
     <None Include="config.yaml" CopyToOutputDirectory="Always" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ObservableLambda.PowerTools.Shared\ObservableLambda.PowerTools.Shared.csproj" />
-  </ItemGroup>
 </Project>
 
