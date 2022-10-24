@@ -1,25 +1,29 @@
-receivers:
+﻿receivers:
   otlp:
     protocols:
       grpc:
       http:
-processors:
-  batch:
-    timeout: 60s
 exporters:
-  awsxray:
-  awsemf:
-    log_group_name: 'AOTLogGroup'
-    log_stream_name: 'AOTLogStream'
-    namespace: 'AOTMetricNS'
-    dimension_rollup_option: 1
+  otlp:
+    endpoint: "api.honeycomb.io:443"
+    headers:
+      "x-honeycomb-team": ""
+      "x-honeycomb-dataset": "ObservableLambdaDemoTraces"
+  otlp/logs:
+    endpoint: "api.honeycomb.io:443"
+    headers:
+      "x-honeycomb-team": ""
+      "x-honeycomb-dataset": "ObservableLambdaDemoLogs"
+  otlp/metrics:
+    endpoint: "api.honeycomb.io:443"
+    headers:
+      "x-honeycomb-team": ""
+      "x-honeycomb-dataset": "ObservableLambdaDemoLogs"
 service:
   pipelines:
     traces:
       receivers: [ otlp ]
-      exporters: [ awsxray ]
-    metrics:
-      receivers: [ otlp ]
-      exporters: [ awsemf ]
+      exporters: [ otlp ]
     logs:
       receivers: [ otlp ]
+      exporters: [ otlp/logs ]

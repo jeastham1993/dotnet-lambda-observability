@@ -21,9 +21,5 @@
     <PackageReference Include="AWS.Lambda.Powertools.Metrics" Version="0.0.1-preview.1" />
     <PackageReference Include="AWS.Lambda.Powertools.Tracing" Version="0.0.1-preview.1" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="config.yaml" CopyToOutputDirectory="Always" />
-  </ItemGroup>
 </Project>
 

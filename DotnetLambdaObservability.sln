@@ -3,19 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda", "src\ObservableLambda\ObservableLambda.csproj", "{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Shared", "src\ObservableLambda.Shared\ObservableLambda.Shared.csproj", "{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.NativeAWS", "src\ObservableLambda.NativeAWS\ObservableLambda.NativeAWS.csproj", "{42587F39-C072-4037-992C-BB6B7026814D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.NativeAWS.Shared", "src\ObservableLambda.NativeAWS.Shared\ObservableLambda.NativeAWS.Shared.csproj", "{4791A115-1A9C-4B9C-839E-F8F73DD1D376}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8AFA49C3-1026-4E1B-9F0D-D2DAA82554EA}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PowerTools", "PowerTools", "{940BA994-4112-46F9-B57A-DDC53B880D1A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.PowerTools", "src\PowerTools\ObservableLambda.PowerTools\ObservableLambda.PowerTools.csproj", "{FB3D7CA7-7207-4C7A-ABE3-933692D03844}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OTEL", "OTEL", "{4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}"
+	ProjectSection(SolutionItems) = preProject
+		src\OTEL\template.yaml = src\OTEL\template.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda", "src\OTEL\ObservableLambda\ObservableLambda.csproj", "{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Shared", "src\OTEL\ObservableLambda.Shared\ObservableLambda.Shared.csproj", "{7D0B3D77-C536-45DE-A267-12A275493BCC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Test", "src\OTEL\ObservableLambda.Test\ObservableLambda.Test.csproj", "{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,33 +27,27 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42587F39-C072-4037-992C-BB6B7026814D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42587F39-C072-4037-992C-BB6B7026814D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42587F39-C072-4037-992C-BB6B7026814D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42587F39-C072-4037-992C-BB6B7026814D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4791A115-1A9C-4B9C-839E-F8F73DD1D376}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FB3D7CA7-7207-4C7A-ABE3-933692D03844}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FB3D7CA7-7207-4C7A-ABE3-933692D03844}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FB3D7CA7-7207-4C7A-ABE3-933692D03844}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FB3D7CA7-7207-4C7A-ABE3-933692D03844}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D0B3D77-C536-45DE-A267-12A275493BCC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D0B3D77-C536-45DE-A267-12A275493BCC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D0B3D77-C536-45DE-A267-12A275493BCC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D0B3D77-C536-45DE-A267-12A275493BCC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{02B3E5F9-11FD-4EE6-8BF7-5E3470DBFD47} = {778A42A1-220A-4775-A7C3-7432614598FA}
-		{E478FDB4-44B0-46A7-B84E-AD2AA2505C64} = {778A42A1-220A-4775-A7C3-7432614598FA}
-		{42587F39-C072-4037-992C-BB6B7026814D} = {778A42A1-220A-4775-A7C3-7432614598FA}
-		{4791A115-1A9C-4B9C-839E-F8F73DD1D376} = {778A42A1-220A-4775-A7C3-7432614598FA}
-		{940BA994-4112-46F9-B57A-DDC53B880D1A} = {8AFA49C3-1026-4E1B-9F0D-D2DAA82554EA}
 		{FB3D7CA7-7207-4C7A-ABE3-933692D03844} = {940BA994-4112-46F9-B57A-DDC53B880D1A}
+		{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
+		{7D0B3D77-C536-45DE-A267-12A275493BCC} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
+		{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
 	EndGlobalSection
 EndGlobal

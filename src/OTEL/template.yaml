@@ -8,6 +8,9 @@ Globals:
     Timeout: 10
     Tracing: PassThrough
     MemorySize: 512
+    Environment:
+      Variables:
+        OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/config.yaml
   Api:
     TracingEnabled: True
 
@@ -16,29 +19,29 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./ObservableLambda/
-      Handler: ObservableLambda::ObservableLambda.Function::TracingFunctionHandler
+      Handler: ObservableLambda::ObservableLambda.Function::TracedFunctionHandler
       Layers:
-        - arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-51-0:1
-      Runtime: dotnetcore3.1
+        - arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-61-0:1
+      Runtime: dotnet6
       Architectures:
         - x86_64
       Environment:
         Variables:
-          TABLE_NAME: sample-table
+          TOPIC_ARN: !Ref PublishTopic
       Policies:
-      - DynamoDBReadPolicy:
-          TableName: sample-table
+      - SNSPublishMessagePolicy:
+          TopicName: "otel-test-publish-topic"
       Events:
-        HelloWorld:
+        ApiEndpoint:
           Type: Api
           Properties:
             Path: /observe-me
             Method: get
-
-  SampleTable:
-    Type: AWS::Serverless::SimpleTable
+            
+  PublishTopic:
+    Type: AWS::SNS::Topic
     Properties:
-      TableName: sample-table
+      TopicName: "otel-test-publish-topic"
 
 Outputs:
   ObservableLambdaApi:
