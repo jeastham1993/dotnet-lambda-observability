@@ -1,16 +1,15 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.APIGatewayEvents;
 using ObservableLambda.Shared;
-using OpenTelemetry.Contrib.Instrumentation.AWSLambda.Implementation;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
+using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Trace;
+using ObservableLambda.Shared.Messaging;
 using TraceOptions = ObservableLambda.Shared.TraceOptions;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
@@ -22,12 +21,15 @@ namespace ObservableLambda
     {
         private readonly IAmazonSimpleNotificationService _snsClient;
 
-        public Function() : base()
+        public Function() : base(new TraceOptions("ObservableLambda.Api")
         {
-            this._snsClient = new AmazonSimpleNotificationServiceClient();
+            AddAwsInstrumentation = false
+        })
+        {
+            this._snsClient = new AmazonSimpleNotificationServiceClient(new EnvironmentVariablesAWSCredentials());
         }
 
-        internal Function(TraceOptions options, IAmazonSimpleNotificationService snsClient) : base(options)
+        internal Function(IAmazonSimpleNotificationService snsClient, TraceOptions options) : base(options)
         {
             this._snsClient = snsClient;
         }
@@ -35,12 +37,6 @@ namespace ObservableLambda
         public override Func<APIGatewayProxyRequest, ILambdaContext, Task<APIGatewayProxyResponse>> Handler =>
             FunctionHandler;
 
-        /// <summary>
-        /// A simple function that takes a APIGatewayProxyRequest and returns a APIGatewayProxyResponse
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
         public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request,
             ILambdaContext context)
         {
@@ -52,7 +48,13 @@ namespace ObservableLambda
                 var publishResult = await this._snsClient.PublishAsync(new PublishRequest()
                 {
                     TopicArn = Environment.GetEnvironmentVariable("TOPIC_ARN"),
-                    Message = "Hello"
+                    Message = new MessageWrapper<string>("Hello").ToString(),
+                    MessageAttributes = new Dictionary<string, MessageAttributeValue>(2)
+                    {
+                        {"traceparent", new MessageAttributeValue(){StringValue = Activity.Current.TraceId.ToString(), DataType = "String"}},
+                        {"parentspan", new MessageAttributeValue(){StringValue = Activity.Current.SpanId.ToString(), DataType = "String"}},
+                        
+                    }
                 });
 
                 publishActivity?.AddTag("sns.result", ((int)publishResult.HttpStatusCode).ToString());

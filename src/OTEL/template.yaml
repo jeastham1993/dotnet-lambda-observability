@@ -5,32 +5,41 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 120
     Tracing: PassThrough
     MemorySize: 512
+    Layers:
+      - arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-61-0:1
+    Runtime: dotnet6
+    Architectures:
+      - x86_64
     Environment:
       Variables:
         OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/config.yaml
+        HONEYCOMB_API_KEY: !Ref HoneycombApiKey
   Api:
     TracingEnabled: True
+    
+Parameters:
+  HoneycombApiKey:
+    NoEcho: true
+    Description: The API Key for honeycomb
+    Type: String
+    MinLength: 1
 
 Resources:
   ObservableLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./ObservableLambda/
+      Timeout: 30
       Handler: ObservableLambda::ObservableLambda.Function::TracedFunctionHandler
-      Layers:
-        - arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-61-0:1
-      Runtime: dotnet6
-      Architectures:
-        - x86_64
       Environment:
         Variables:
           TOPIC_ARN: !Ref PublishTopic
       Policies:
       - SNSPublishMessagePolicy:
-          TopicName: "otel-test-publish-topic"
+          TopicName: !GetAtt PublishTopic.TopicName
       Events:
         ApiEndpoint:
           Type: Api
@@ -38,10 +47,74 @@ Resources:
             Path: /observe-me
             Method: get
             
+  BatchProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./ObservableLambda.Processor.Batch/
+      Handler: ObservableLambda.Processor.Batch::ObservableLambda.Processor.Batch.Function::TracedFunctionHandler
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt BatchProcessingQueue.Arn
+            BatchSize: 10
+            MaximumBatchingWindowInSeconds: 10
+  
+  SingleMessageProcessor:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./ObservableLambda.Processor.SingleMessage/
+      Handler: ObservableLambda.Processor.SingleMessage::ObservableLambda.Processor.SingleMessage.Function::TracedFunctionHandler
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SingleMessageQueue.Arn
+            BatchSize: 10
+            MaximumBatchingWindowInSeconds: 10
+            
   PublishTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: "otel-test-publish-topic"
+      Subscription:
+        - Endpoint: !GetAtt BatchProcessingQueue.Arn
+          Protocol: "sqs"
+        - Endpoint: !GetAtt SingleMessageQueue.Arn
+          Protocol: "sqs"
+
+  BatchProcessingQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "batch-processing-queue"
+      VisibilityTimeout: 120
+
+  SingleMessageQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "single-message-queue"
+      VisibilityTimeout: 120
+  
+  AllowSnsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref SingleMessageQueue
+        - !Ref BatchProcessingQueue
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - "SQS:SendMessage"
+            Effect: "Allow"
+            Resource:
+              - !GetAtt SingleMessageQueue.Arn
+              - !GetAtt BatchProcessingQueue.Arn
+            Principal:
+              Service:
+                - "sns.amazonaws.com"
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref PublishTopic
 
 Outputs:
   ObservableLambdaApi:

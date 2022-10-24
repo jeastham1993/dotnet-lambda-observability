@@ -30,13 +30,15 @@ public class TraceTests
                 ContentLength = 150,
             });
         
-        var function = new Function(new TraceOptions()
+        var function = new Function(mockSnsClient.Object, new TraceOptions()
         {
             CollectedSpans = activities,
-            ServiceName = "ObservableLambda.UnitTest"
-        }, mockSnsClient.Object);
+            ServiceName = "ObservableLambda.UnitTest",
+            AddAwsInstrumentation = false,
+            AddLambdaConfiguration = false
+        });
 
-        var functionResult = await function.TracedFunctionHandler(new APIGatewayProxyRequest(), new TestLambdaContext());
+        await function.TracedFunctionHandler(new APIGatewayProxyRequest(), new TestLambdaContext());
 
         var snsPublishActivity = activities.FirstOrDefault(p => p.DisplayName.Contains("sns-publish"));
         

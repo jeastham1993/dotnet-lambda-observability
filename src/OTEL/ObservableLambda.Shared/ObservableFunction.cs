@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Metrics;
@@ -8,10 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
-using Amazon.SimpleSystemsManagement;
-using Honeycomb.OpenTelemetry;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Contrib.Extensions.AWSXRay.Trace;
 using OpenTelemetry.Logs;
 
 namespace ObservableLambda.Shared
@@ -20,7 +16,7 @@ namespace ObservableLambda.Shared
     {
         private TracerProvider _tracerProvider;
         private MeterProvider _meterProvider;
-        private ActivitySource source;
+        private TraceOptions _options;
 
         public static string SERVICE_NAME = "ObservableLambdaDemo";
         
@@ -28,22 +24,45 @@ namespace ObservableLambda.Shared
         public ILogger<ObservableFunction<TRequestType, TResponseType>> Logger { get; private set; }
         
         public Meter Meter = new Meter(SERVICE_NAME, "1.0");
-        
+
+        public ActivitySource Source { get; private set; }
+
         public abstract Func<TRequestType, ILambdaContext, Task<TResponseType>> Handler { get; }
         
-        public ObservableFunction()
+        public ObservableFunction(TraceOptions options)
         {
+            _options = options;
+            
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            
+            if (!string.IsNullOrEmpty(options.ServiceName))
+            {
+                SERVICE_NAME = options.ServiceName;   
+            }
 
             var resourceBuilder = ResourceBuilder.CreateDefault().AddService(SERVICE_NAME);
 
-            _tracerProvider = Sdk.CreateTracerProviderBuilder()
+            var traceConfig = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
                 .AddSource(SERVICE_NAME)
-                .AddAWSInstrumentation()
-                .AddAWSLambdaConfigurations()
-                .AddOtlpExporter()
-                .Build();
+                .AddOtlpExporter();
+
+            if (options.AddAwsInstrumentation)
+            {
+                traceConfig.AddAWSInstrumentation();
+            }
+
+            if (options.AddLambdaConfiguration)
+            {
+                traceConfig.AddAWSLambdaConfigurations();
+            }
+
+            if (options.CollectedSpans != null)
+            {
+                traceConfig.AddInMemoryExporter(options.CollectedSpans);
+            }
+
+            _tracerProvider = traceConfig.Build();
             
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
@@ -62,60 +81,63 @@ namespace ObservableLambda.Shared
                 .AddOtlpExporter()
                 .Build();
         }
-        
-        public ObservableFunction(TraceOptions options)
-        {
-            SERVICE_NAME = options.ServiceName;
-            
-            var resourceBuilder = ResourceBuilder.CreateDefault().AddService(options.ServiceName);
-            
-            _tracerProvider = Sdk.CreateTracerProviderBuilder()
-                .SetResourceBuilder(resourceBuilder)
-                .AddSource(options.ServiceName)
-                .AddOtlpExporter()
-                .AddInMemoryExporter(options.CollectedSpans)
-                .Build();
-            
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddOpenTelemetry(options =>
-                {
-                    options.SetResourceBuilder(resourceBuilder)
-                        .AddOtlpExporter();
-                });
-            });
-
-            Logger = loggerFactory.CreateLogger<ObservableFunction<TRequestType, TResponseType>>();;
-            
-            this._meterProvider = Sdk.CreateMeterProviderBuilder()
-                .AddMeter(SERVICE_NAME)
-                .SetResourceBuilder(resourceBuilder)
-                .AddOtlpExporter()
-                .Build();
-        }
 
         public async Task<TResponseType> TracedFunctionHandler(TRequestType request,
             ILambdaContext context)
         {
             if (Activity.Current == null)
             {
-                source = new ActivitySource(SERVICE_NAME);
+                Source = new ActivitySource(SERVICE_NAME);
             }
 
-            using (var rootSpan = (Activity.Current == null ? source : Activity.Current.Source).StartActivity(context.FunctionName, ActivityKind.Server, parentContext: this.Context))
+            if (this._options.AutoStartTrace)
             {
-                rootSpan.AddTag("aws.lambda.invoked_arn", context.InvokedFunctionArn);
-                rootSpan.AddTag("faas.id", context.InvokedFunctionArn);
-                rootSpan.AddTag("faas.execution", context.AwsRequestId);
-                rootSpan.AddTag("cloud.account.id", context.InvokedFunctionArn?.Split(":")[4]);
-                rootSpan.AddTag("cloud.provider", "aws");
-                rootSpan.AddTag("faas.name", context.FunctionName);
-                rootSpan.AddTag("faas.version", context.FunctionVersion);
+                using (var rootSpan = (Activity.Current == null ? Source : Activity.Current.Source).StartActivity(context.FunctionName, ActivityKind.Server, parentContext: this.Context))
+                {
+                    rootSpan.AddTag("aws.lambda.invoked_arn", context.InvokedFunctionArn);
+                    rootSpan.AddTag("faas.id", context.InvokedFunctionArn);
+                    rootSpan.AddTag("faas.execution", context.AwsRequestId);
+                    rootSpan.AddTag("cloud.account.id", context.InvokedFunctionArn?.Split(":")[4]);
+                    rootSpan.AddTag("cloud.provider", "aws");
+                    rootSpan.AddTag("faas.name", context.FunctionName);
+                    rootSpan.AddTag("faas.version", context.FunctionVersion);
 
+                    try
+                    {
+                        using var handlerSpan = Activity.Current.Source.StartActivity($"{context.FunctionName}_Handler");
+
+                        TResponseType result = default;
+                        Func<Task> action = async () => result = await Handler(request, context);
+
+                        await action();
+
+                        return result;
+                    }
+                    catch (Exception e)
+                    {
+                        rootSpan.SetStatus(Status.Error);
+                        rootSpan.RecordException(e);
+
+                        rootSpan.Stop();
+
+                        this._tracerProvider.ForceFlush();
+                        this._meterProvider.ForceFlush();
+
+                        throw;
+                    }
+                    finally
+                    {
+                        rootSpan.Stop();
+
+                        this._tracerProvider.ForceFlush();
+                        this._meterProvider.ForceFlush();
+                    }
+                }
+            }
+            else
+            {
                 try
                 {
-                    using var handlerSpan = Activity.Current.Source.StartActivity($"{context.FunctionName}_Handler");
-
                     TResponseType result = default;
                     Func<Task> action = async () => result = await Handler(request, context);
 
@@ -123,13 +145,8 @@ namespace ObservableLambda.Shared
 
                     return result;
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    rootSpan.SetStatus(Status.Error);
-                    rootSpan.RecordException(e);
-
-                    rootSpan.Stop();
-
                     this._tracerProvider.ForceFlush();
                     this._meterProvider.ForceFlush();
 
@@ -137,8 +154,6 @@ namespace ObservableLambda.Shared
                 }
                 finally
                 {
-                    rootSpan.Stop();
-
                     this._tracerProvider.ForceFlush();
                     this._meterProvider.ForceFlush();
                 }
