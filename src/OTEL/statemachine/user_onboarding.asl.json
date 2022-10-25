@@ -1,0 +1,11 @@
+{
+  "Comment": "A description of my state machine",
+  "StartAt": "Wait",
+  "States": {
+    "Wait": {
+      "Type": "Wait",
+      "Seconds": 20,
+      "End": true
+    }
+  }
+}

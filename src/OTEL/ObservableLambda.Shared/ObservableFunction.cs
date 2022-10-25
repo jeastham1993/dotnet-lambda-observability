@@ -15,16 +15,12 @@ namespace ObservableLambda.Shared
     public abstract class ObservableFunction<TRequestType, TResponseType>
     {
         private TracerProvider _tracerProvider;
-        private MeterProvider _meterProvider;
         private TraceOptions _options;
 
         public static string SERVICE_NAME = "ObservableLambdaDemo";
         
         public ActivityContext Context;
-        public ILogger<ObservableFunction<TRequestType, TResponseType>> Logger { get; private set; }
         
-        public Meter Meter = new Meter(SERVICE_NAME, "1.0");
-
         public ActivitySource Source { get; private set; }
 
         public abstract Func<TRequestType, ILambdaContext, Task<TResponseType>> Handler { get; }
@@ -63,23 +59,6 @@ namespace ObservableLambda.Shared
             }
 
             _tracerProvider = traceConfig.Build();
-            
-            using var loggerFactory = LoggerFactory.Create(builder =>
-            {
-                builder.AddOpenTelemetry(options =>
-                {
-                    options.SetResourceBuilder(resourceBuilder)
-                        .AddOtlpExporter();
-                });
-            });
-
-            Logger = loggerFactory.CreateLogger<ObservableFunction<TRequestType, TResponseType>>();
-            
-            this._meterProvider = Sdk.CreateMeterProviderBuilder()
-                .AddMeter(SERVICE_NAME)
-                .SetResourceBuilder(resourceBuilder)
-                .AddOtlpExporter()
-                .Build();
         }
 
         public async Task<TResponseType> TracedFunctionHandler(TRequestType request,
@@ -104,14 +83,16 @@ namespace ObservableLambda.Shared
 
                     try
                     {
-                        using var handlerSpan = Activity.Current.Source.StartActivity($"{context.FunctionName}_Handler");
+                        using (var handlerSpan =
+                               Activity.Current.Source.StartActivity($"{context.FunctionName}_Handler"))
+                        {
+                            TResponseType result = default;
+                            Func<Task> action = async () => result = await Handler(request, context);
 
-                        TResponseType result = default;
-                        Func<Task> action = async () => result = await Handler(request, context);
+                            await action();
 
-                        await action();
-
-                        return result;
+                            return result;   
+                        }
                     }
                     catch (Exception e)
                     {
@@ -121,7 +102,6 @@ namespace ObservableLambda.Shared
                         rootSpan.Stop();
 
                         this._tracerProvider.ForceFlush();
-                        this._meterProvider.ForceFlush();
 
                         throw;
                     }
@@ -130,7 +110,6 @@ namespace ObservableLambda.Shared
                         rootSpan.Stop();
 
                         this._tracerProvider.ForceFlush();
-                        this._meterProvider.ForceFlush();
                     }
                 }
             }
@@ -148,14 +127,12 @@ namespace ObservableLambda.Shared
                 catch (Exception)
                 {
                     this._tracerProvider.ForceFlush();
-                    this._meterProvider.ForceFlush();
 
                     throw;
                 }
                 finally
                 {
                     this._tracerProvider.ForceFlush();
-                    this._meterProvider.ForceFlush();
                 }
             }
         }

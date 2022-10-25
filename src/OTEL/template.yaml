@@ -6,7 +6,6 @@ Description: >
 Globals:
   Function:
     Timeout: 120
-    Tracing: PassThrough
     MemorySize: 512
     Layers:
       - arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-collector-amd64-ver-0-61-0:1
@@ -17,8 +16,6 @@ Globals:
       Variables:
         OPENTELEMETRY_COLLECTOR_CONFIG_FILE: /var/task/config.yaml
         HONEYCOMB_API_KEY: !Ref HoneycombApiKey
-  Api:
-    TracingEnabled: True
     
 Parameters:
   HoneycombApiKey:
@@ -37,21 +34,28 @@ Resources:
       Environment:
         Variables:
           TOPIC_ARN: !Ref PublishTopic
+          TABLE_NAME: !Ref ObservableLambdaTable
       Policies:
       - SNSPublishMessagePolicy:
           TopicName: !GetAtt PublishTopic.TopicName
+      - DynamoDBWritePolicy:
+          TableName: !Ref ObservableLambdaTable
       Events:
         ApiEndpoint:
           Type: Api
           Properties:
             Path: /observe-me
-            Method: get
+            Method: POST
             
+  
   BatchProcessor:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./ObservableLambda.Processor.Batch/
       Handler: ObservableLambda.Processor.Batch::ObservableLambda.Processor.Batch.Function::TracedFunctionHandler
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: default
       Events:
         SQSEvent:
           Type: SQS
@@ -65,6 +69,12 @@ Resources:
     Properties:
       CodeUri: ./ObservableLambda.Processor.SingleMessage/
       Handler: ObservableLambda.Processor.SingleMessage::ObservableLambda.Processor.SingleMessage.Function::TracedFunctionHandler
+      Environment:
+        Variables:
+          STATE_MACHINE_ARN: !Ref UserOnBoardingWorkflowStateMachine
+      Policies:
+      - StepFunctionsExecutionPolicy:
+          StateMachineName: UserOnBoardingWorkflow 
       Events:
         SQSEvent:
           Type: SQS
@@ -73,6 +83,7 @@ Resources:
             BatchSize: 10
             MaximumBatchingWindowInSeconds: 10
             
+  
   PublishTopic:
     Type: AWS::SNS::Topic
     Properties:
@@ -116,6 +127,27 @@ Resources:
               ArnEquals:
                 aws:SourceArn: !Ref PublishTopic
 
+  ObservableLambdaTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+
+  UserOnBoardingWorkflowStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: statemachine/user_onboarding.asl.json
+      Name: UserOnBoardingWorkflow
+      Logging:
+        IncludeExecutionData: true
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref ObservableLambdaTable
 Outputs:
   ObservableLambdaApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"

@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OTEL", "OTEL", "{4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}"
 	ProjectSection(SolutionItems) = preProject
 		src\OTEL\template.yaml = src\OTEL\template.yaml
+		src\OTEL\statemachine\user_onboarding.asl.json = src\OTEL\statemachine\user_onboarding.asl.json
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda", "src\OTEL\ObservableLambda\ObservableLambda.csproj", "{38378E25-ACDF-4F8F-8A44-D9E7EF16BE67}"
