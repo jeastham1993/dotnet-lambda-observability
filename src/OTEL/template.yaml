@@ -83,7 +83,6 @@ Resources:
             BatchSize: 10
             MaximumBatchingWindowInSeconds: 10
             
-  
   PublishTopic:
     Type: AWS::SNS::Topic
     Properties:
@@ -145,9 +144,31 @@ Resources:
       Name: UserOnBoardingWorkflow
       Logging:
         IncludeExecutionData: true
+        Level: ALL
+        Destinations:
+          - CloudWatchLogsLogGroup:
+              LogGroupArn: !GetAtt UserOnBoardingStepFunctionLogGroup.Arn
       Policies:
-        - DynamoDBReadPolicy:
-            TableName: !Ref ObservableLambdaTable
+        - Statement:
+            - Sid: AllowLogging
+              Effect: Allow
+              Action:
+                - logs:CreateLogDelivery
+                - logs:GetLogDelivery
+                - logs:UpdateLogDelivery
+                - logs:DeleteLogDelivery
+                - logs:ListLogDeliveries
+                - logs:PutLogEvents
+                - logs:PutResourcePolicy
+                - logs:DescribeResourcePolicies
+                - logs:DescribeLogGroups
+              Resource: "*"
+            
+  UserOnBoardingStepFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "UserOnBoardingStepFunctionLogGroup"
+
 Outputs:
   ObservableLambdaApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
