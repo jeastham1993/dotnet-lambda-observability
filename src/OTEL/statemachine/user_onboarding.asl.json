@@ -1,10 +1,20 @@
 {
   "Comment": "A description of my state machine",
-  "StartAt": "Wait",
+  "StartAt": "WaitFor20Seconds",
   "States": {
-    "Wait": {
+    "WaitFor20Seconds": {
       "Type": "Wait",
       "Seconds": 20,
+      "Next": "WaitForAnother60Seconds"
+    },
+    "WaitForAnother60Seconds": {
+      "Type": "Wait",
+      "Seconds": 60,
+      "Next": "JustAnother30Seconds"
+    },
+    "JustAnother30Seconds": {
+      "Type": "Wait",
+      "Seconds": 30,
       "End": true
     }
   }

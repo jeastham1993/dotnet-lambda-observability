@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Processor.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Processor.SingleMessage", "src\OTEL\ObservableLambda.Processor.SingleMessage\ObservableLambda.Processor.SingleMessage.csproj", "{F9882358-19D5-488D-BC31-FF971D79DA05}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.StepFunctionTracer", "src\OTEL\ObservableLambda.StepFunctionTracer\ObservableLambda.StepFunctionTracer.csproj", "{8AE9504D-5392-446F-B963-099CF05F7482}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,6 +58,10 @@ Global
 		{F9882358-19D5-488D-BC31-FF971D79DA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9882358-19D5-488D-BC31-FF971D79DA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9882358-19D5-488D-BC31-FF971D79DA05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AE9504D-5392-446F-B963-099CF05F7482}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AE9504D-5392-446F-B963-099CF05F7482}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AE9504D-5392-446F-B963-099CF05F7482}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AE9504D-5392-446F-B963-099CF05F7482}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FB3D7CA7-7207-4C7A-ABE3-933692D03844} = {940BA994-4112-46F9-B57A-DDC53B880D1A}
@@ -64,5 +70,6 @@ Global
 		{CCBF2F14-D7E7-4E0D-900F-E16624D67AAD} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
 		{2F2FA291-29E1-4321-8F34-27BBC7E75FF6} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
 		{F9882358-19D5-488D-BC31-FF971D79DA05} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
+		{8AE9504D-5392-446F-B963-099CF05F7482} = {4DF37C95-36D8-4642-BC5D-F9CB3E4C1733}
 	EndGlobalSection
 EndGlobal

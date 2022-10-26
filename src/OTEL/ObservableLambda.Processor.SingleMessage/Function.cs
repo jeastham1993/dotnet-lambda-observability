@@ -67,11 +67,18 @@ namespace ObservableLambda.Processor.SingleMessage
 
                 using (var userWorkflowActivity = Activity.Current.Source.StartActivity("step-functions-start-workflow"))
                 {
+                    messageContents.Metadata.ParentSpan = userWorkflowActivity.SpanId.ToString();
+
                     // Logic here to kick off a user flow for step functions
                     var startExecutionResponse = await this._stepFunctionsClient.StartExecutionAsync(new StartExecutionRequest()
                     {
                         Input = JsonSerializer.Serialize(messageContents),
                         StateMachineArn = Environment.GetEnvironmentVariable("STATE_MACHINE_ARN"),
+                    });
+
+                    var response = await this._stepFunctionsClient.GetExecutionHistoryAsync(new GetExecutionHistoryRequest()
+                    {
+                        
                     });
 
                     userWorkflowActivity.AddTag("states.state_machine_arn", Environment.GetEnvironmentVariable("STATE_MACHINE_ARN"));

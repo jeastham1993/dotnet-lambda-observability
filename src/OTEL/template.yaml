@@ -82,6 +82,35 @@ Resources:
             Queue: !GetAtt SingleMessageQueue.Arn
             BatchSize: 10
             MaximumBatchingWindowInSeconds: 10
+  
+  StepFunctionTracer:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./ObservableLambda.StepFunctionTracer/
+      Handler: ObservableLambda.StepFunctionTracer::ObservableLambda.StepFunctionTracer.Function::FunctionHandler
+      Timeout: 300
+      Policies:
+        - Statement:
+            - Sid: AllowCloudWatchQueries
+              Effect: Allow
+              Action:
+                - logs:StartQuery
+                - logs:GetQueryResults
+              Resource: "*"
+      Events:
+        StepFunctionStateChangeEvent:
+          Type: CloudWatchEvent
+          Properties:
+            Pattern:
+              source:
+                - aws.states
+              detail-type:
+                - Step Functions Execution Status Change
+              detail:
+                stateMachineArn:
+                  - !Ref UserOnBoardingWorkflowStateMachine
+                status:
+                  - 'SUCCEEDED'
             
   PublishTopic:
     Type: AWS::SNS::Topic
