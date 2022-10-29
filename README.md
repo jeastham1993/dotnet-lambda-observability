@@ -1,5 +1,7 @@
 # .NET Lambda Observability
 
+[![Deploy OTEL](https://github.com/jeastham1993/dotnet-lambda-observability/actions/workflows/otel-deployment.yaml/badge.svg)](https://github.com/jeastham1993/dotnet-lambda-observability/actions/workflows/otel-deployment.yaml)
+
 ![](./image/honeycomb-ui.PNG)
 
 Observability is an important part of serverless applications. As the levels of decomposition get smaller tracing and structured logging become all the more important.
