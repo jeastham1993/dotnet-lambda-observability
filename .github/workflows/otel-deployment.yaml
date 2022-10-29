@@ -12,19 +12,15 @@ jobs:
   build-deploy:
       runs-on: ubuntu-latest
       steps:
-        - uses: actions/setup-python@v2
-        - uses: actions/setup-dotnet@v3
+        - uses: actions/checkout@v2  
+        - name: Build and Deploy
+          uses: ./.github/actions/sam-build-and-deploy
           with:
-            dotnet-version: '6.0.x'
-        - uses: aws-actions/setup-sam@v1
-        - uses: aws-actions/configure-aws-credentials@v1
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+            aws-access-key: ${{ secrets.AWS_ACCESS_KEY }}
+            aws-secret-key: ${{ secrets.AWS_SECRET_KEY }}
             aws-region: ${{ secrets.AWS_REGION }}
-
-    # Build and deploy ARM
-        - run: sam build -t ./src/OTEL/template.yaml --parameter-overrides HoneycombApiKey=${{secrets.HONEYCOMB_API_KEY}}
-          shell: bash
-        - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name observable-lambda-otel-demo --s3-prefix observable-lambda-otel-demo --s3-bucket "aws-sam-cli-managed-default-samclisourcebucket-1bb5unt6m9r3a" --capabilities CAPABILITY_IAM --parameter-overrides HoneycombApiKey=${{secrets.HONEYCOMB_API_KEY}}
-          shell: bash
+            dotnet-version: '6.0.x'
+            template-file-path: ./src/OTEL/template.yaml
+            stack-name: observable-lambda-otel-demo
+            s3-bucket-name: aws-sam-cli-managed-default-samclisourcebucket-1bb5unt6m9r3a
+            honeycomb-api-key: ${{secrets.HONEYCOMB_API_KEY}}
