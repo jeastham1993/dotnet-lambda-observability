@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D6DE343E-66A8-4D6B-BFDD-FF5D691757F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Test", "tests\ObservableLambda.Test\ObservableLambda.Test.csproj", "{8175A9B9-2621-454A-99C4-1B6E73C2EA02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BF8F4470-C65B-4AF9-840C-EAAC9E94BFF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.CreateUser", "src\ObservableLambda.CreateUser\ObservableLambda.CreateUser.csproj", "{45629204-0EAF-4340-BADE-93F625C5D3FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Processor.Batch", "src\ObservableLambda.Processor.Batch\ObservableLambda.Processor.Batch.csproj", "{A191ED5A-41DA-40DA-B3B1-61B6C38F437C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Processor.SingleMessage", "src\ObservableLambda.Processor.SingleMessage\ObservableLambda.Processor.SingleMessage.csproj", "{374BFBF5-1B9C-49C3-BC70-DD510704A130}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.Shared", "src\ObservableLambda.Shared\ObservableLambda.Shared.csproj", "{A362F941-C05E-4096-91D2-6094EFF8E968}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObservableLambda.StepFunctionTracer", "src\ObservableLambda.StepFunctionTracer\ObservableLambda.StepFunctionTracer.csproj", "{CD2F3754-26CB-4304-89C8-CE5155A0ABF5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{E30C4CB0-5672-4AC4-8F00-7389A62775F9}"
+	ProjectSection(SolutionItems) = preProject
+		template.yaml = template.yaml
+		statemachine\user_onboarding.asl.json = statemachine\user_onboarding.asl.json
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8175A9B9-2621-454A-99C4-1B6E73C2EA02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8175A9B9-2621-454A-99C4-1B6E73C2EA02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8175A9B9-2621-454A-99C4-1B6E73C2EA02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8175A9B9-2621-454A-99C4-1B6E73C2EA02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45629204-0EAF-4340-BADE-93F625C5D3FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45629204-0EAF-4340-BADE-93F625C5D3FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45629204-0EAF-4340-BADE-93F625C5D3FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45629204-0EAF-4340-BADE-93F625C5D3FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A191ED5A-41DA-40DA-B3B1-61B6C38F437C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A191ED5A-41DA-40DA-B3B1-61B6C38F437C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A191ED5A-41DA-40DA-B3B1-61B6C38F437C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A191ED5A-41DA-40DA-B3B1-61B6C38F437C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{374BFBF5-1B9C-49C3-BC70-DD510704A130}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{374BFBF5-1B9C-49C3-BC70-DD510704A130}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{374BFBF5-1B9C-49C3-BC70-DD510704A130}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{374BFBF5-1B9C-49C3-BC70-DD510704A130}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A362F941-C05E-4096-91D2-6094EFF8E968}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A362F941-C05E-4096-91D2-6094EFF8E968}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A362F941-C05E-4096-91D2-6094EFF8E968}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A362F941-C05E-4096-91D2-6094EFF8E968}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD2F3754-26CB-4304-89C8-CE5155A0ABF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD2F3754-26CB-4304-89C8-CE5155A0ABF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD2F3754-26CB-4304-89C8-CE5155A0ABF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD2F3754-26CB-4304-89C8-CE5155A0ABF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8175A9B9-2621-454A-99C4-1B6E73C2EA02} = {D6DE343E-66A8-4D6B-BFDD-FF5D691757F6}
+		{45629204-0EAF-4340-BADE-93F625C5D3FE} = {BF8F4470-C65B-4AF9-840C-EAAC9E94BFF9}
+		{A191ED5A-41DA-40DA-B3B1-61B6C38F437C} = {BF8F4470-C65B-4AF9-840C-EAAC9E94BFF9}
+		{374BFBF5-1B9C-49C3-BC70-DD510704A130} = {BF8F4470-C65B-4AF9-840C-EAAC9E94BFF9}
+		{A362F941-C05E-4096-91D2-6094EFF8E968} = {BF8F4470-C65B-4AF9-840C-EAAC9E94BFF9}
+		{CD2F3754-26CB-4304-89C8-CE5155A0ABF5} = {BF8F4470-C65B-4AF9-840C-EAAC9E94BFF9}
+	EndGlobalSection
+EndGlobal

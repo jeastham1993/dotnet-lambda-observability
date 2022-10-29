@@ -1,24 +1,9 @@
 using System.Diagnostics;
-using System.Net;
-using System.Reflection;
-using System.Runtime.Loader;
-using System.Text.Json;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Amazon.EventBridge;
-using Amazon.EventBridge.Model;
-using Amazon.Lambda.SQSEvents;
 using Amazon.Lambda.TestUtilities;
-using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-using Amazon.StepFunctions;
-using Amazon.StepFunctions.Model;
 using FluentAssertions;
-using Moq;
-using ObservableLambda.Processor.Batch;
 using ObservableLambda.Test.AwsOddTestFramework;
 using ObservableLambda.Test.Utilities;
-using TraceOptions = ObservableLambda.Shared.TraceOptions;
 
 namespace ObservableLambda.Test;
 
@@ -32,7 +17,7 @@ public class TraceTests
         var traceOptions = new TestTraceOptions(activities);
         var snsPublisher = new SnsPublishing();
         
-        var apiFunction = new ObservableLambda.Function(snsPublisher.MockSnsClient.Object, mockAws.DynamoDb.Object, traceOptions.TraceOptions);
+        var apiFunction = new ObservableLambda.CreateUser.Function(snsPublisher.MockSnsClient.Object, mockAws.DynamoDb.Object, traceOptions.TraceOptions);
 
         await apiFunction.TracedFunctionHandler(TestInputGenerator.ApiWithEmailAddress, new TestLambdaContext());
         

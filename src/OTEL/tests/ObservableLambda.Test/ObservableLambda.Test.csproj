@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.TestUtilities" Version="2.0.0" />
+        <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.100.1" />
         <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.100.1" />
         <PackageReference Include="FluentAssertions" Version="6.8.0" />
         <PackageReference Include="Honeycomb.OpenTelemetry" Version="1.0.0" />
@@ -31,9 +32,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ObservableLambda.Processor.Batch\ObservableLambda.Processor.Batch.csproj" />
-      <ProjectReference Include="..\ObservableLambda.Processor.SingleMessage\ObservableLambda.Processor.SingleMessage.csproj" />
-      <ProjectReference Include="..\ObservableLambda\ObservableLambda.csproj" />
+      <ProjectReference Include="..\..\src\ObservableLambda.CreateUser\ObservableLambda.CreateUser.csproj" />
+      <ProjectReference Include="..\..\src\ObservableLambda.Processor.Batch\ObservableLambda.Processor.Batch.csproj" />
+      <ProjectReference Include="..\..\src\ObservableLambda.Processor.SingleMessage\ObservableLambda.Processor.SingleMessage.csproj" />
     </ItemGroup>
 
 </Project>

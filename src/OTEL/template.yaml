@@ -28,9 +28,9 @@ Resources:
   ObservableLambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./ObservableLambda/
+      CodeUri: ./src/ObservableLambda.CreateUser/
       Timeout: 30
-      Handler: ObservableLambda::ObservableLambda.Function::TracedFunctionHandler
+      Handler: ObservableLambda.CreateUser::ObservableLambda.CreateUser.Function::TracedFunctionHandler
       Environment:
         Variables:
           TOPIC_ARN: !Ref PublishTopic
@@ -51,7 +51,7 @@ Resources:
   BatchProcessor:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./ObservableLambda.Processor.Batch/
+      CodeUri: ./src/ObservableLambda.Processor.Batch/
       Handler: ObservableLambda.Processor.Batch::ObservableLambda.Processor.Batch.Function::TracedFunctionHandler
       Policies:
         - EventBridgePutEventsPolicy:
@@ -67,7 +67,7 @@ Resources:
   SingleMessageProcessor:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./ObservableLambda.Processor.SingleMessage/
+      CodeUri: ./src/ObservableLambda.Processor.SingleMessage/
       Handler: ObservableLambda.Processor.SingleMessage::ObservableLambda.Processor.SingleMessage.Function::TracedFunctionHandler
       Environment:
         Variables:
@@ -86,7 +86,7 @@ Resources:
   StepFunctionTracer:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./ObservableLambda.StepFunctionTracer/
+      CodeUri: ./src/ObservableLambda.StepFunctionTracer/
       Handler: ObservableLambda.StepFunctionTracer::ObservableLambda.StepFunctionTracer.Function::FunctionHandler
       Timeout: 300
       Policies:

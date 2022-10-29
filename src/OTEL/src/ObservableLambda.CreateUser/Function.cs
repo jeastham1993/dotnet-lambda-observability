@@ -1,6 +1,3 @@
-using Amazon.Lambda.Core;
-using Amazon.Lambda.APIGatewayEvents;
-using ObservableLambda.Shared;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,20 +5,21 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
 using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-using Microsoft.Extensions.Logging;
+using ObservableLambda.Shared;
 using ObservableLambda.Shared.Messaging;
 using ObservableLambda.Shared.Model;
 using ObservableLambda.Shared.ViewModel;
-using OpenTelemetry.Trace;
 using TraceOptions = ObservableLambda.Shared.TraceOptions;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
 
-namespace ObservableLambda
+namespace ObservableLambda.CreateUser
 {
     public class Function : ObservableFunction<APIGatewayProxyRequest, APIGatewayProxyResponse>
     {
@@ -118,7 +116,7 @@ namespace ObservableLambda
             return new APIGatewayProxyResponse()
             {
                 StatusCode = 200,
-                Body = "Hello Validator!",
+                Body = JsonSerializer.Serialize(userToCreate),
                 Headers = new Dictionary<string, string>(2)
                 {
                     {"Content-Type", "application/json"},

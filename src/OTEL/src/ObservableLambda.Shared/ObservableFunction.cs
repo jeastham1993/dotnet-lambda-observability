@@ -5,8 +5,10 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Reflection;
 using System.Threading.Tasks;
 using Amazon.Lambda.Core;
+using Honeycomb.OpenTelemetry;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 
@@ -17,8 +19,6 @@ namespace ObservableLambda.Shared
         private TracerProvider _tracerProvider;
         private TraceOptions _options;
 
-        public static string SERVICE_NAME = "ObservableLambdaDemo";
-        
         public ActivityContext Context;
         
         public ActivitySource Source { get; private set; }
@@ -31,17 +31,18 @@ namespace ObservableLambda.Shared
             
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             
-            if (!string.IsNullOrEmpty(options.ServiceName))
-            {
-                SERVICE_NAME = options.ServiceName;   
-            }
-
-            var resourceBuilder = ResourceBuilder.CreateDefault().AddService(SERVICE_NAME);
+            var resourceBuilder = ResourceBuilder.CreateDefault().AddService((this._options.ServiceName));
 
             var traceConfig = Sdk.CreateTracerProviderBuilder()
                 .SetResourceBuilder(resourceBuilder)
-                .AddSource(SERVICE_NAME)
-                .AddOtlpExporter();
+                .AddSource((this._options.ServiceName ?? Assembly.GetExecutingAssembly().FullName))
+                // .AddOtlpExporter()
+                .AddHoneycomb(new HoneycombOptions
+                {
+                    ServiceName = (this._options.ServiceName ?? Assembly.GetExecutingAssembly().FullName),
+                    ApiKey = Environment.GetEnvironmentVariable("HONEYCOMB_API_KEY"),
+                    EnableLocalVisualizations = true
+                });
 
             if (options.AddAwsInstrumentation)
             {
@@ -66,12 +67,12 @@ namespace ObservableLambda.Shared
         {
             if (Activity.Current == null)
             {
-                Source = new ActivitySource(SERVICE_NAME);
+                Source = new ActivitySource((this._options.ServiceName ?? context.FunctionName));
             }
 
             if (this._options.AutoStartTrace)
             {
-                using (var rootSpan = (Activity.Current == null ? Source : Activity.Current.Source).StartActivity(context.FunctionName, ActivityKind.Server, parentContext: this.Context))
+                using (var rootSpan = (Activity.Current == null ? Source : Activity.Current.Source).StartActivity((this._options.ServiceName ?? context.FunctionName), ActivityKind.Server, parentContext: this.Context))
                 {
                     rootSpan.AddTag("aws.lambda.invoked_arn", context.InvokedFunctionArn);
                     rootSpan.AddTag("faas.id", context.InvokedFunctionArn);
