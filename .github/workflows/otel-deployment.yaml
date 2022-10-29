@@ -24,3 +24,4 @@ jobs:
             stack-name: observable-lambda-otel-demo
             s3-bucket-name: aws-sam-cli-managed-default-samclisourcebucket-1bb5unt6m9r3a
             honeycomb-api-key: ${{secrets.HONEYCOMB_API_KEY}}
+            unit-test-csproj-path: './src/OTEL/tests/ObservableLambda.Test/ObservableLambda.Test.csproj'
