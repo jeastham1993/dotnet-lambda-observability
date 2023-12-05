@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F06DB55C-E783-4AFA-9E61-732DF76E344E}"
+	ProjectSection(SolutionItems) = preProject
+		template.yaml = template.yaml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtelLambda", "src\OtelLambda\OtelLambda.csproj", "{C0F858AA-20DD-4433-81CD-593D4D541C7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OtelQueueProcessor", "src\OtelQueueProcessor\OtelQueueProcessor.csproj", "{827EF32E-3677-43CD-9FE1-2B9322D406B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging.Shared", "src\Messaging.Shared\Messaging.Shared.csproj", "{F39C52F3-39BA-4244-B7F2-F47CDD564791}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Serverless.OpenTelemetry", "src\Serverless.OpenTelemetry\Serverless.OpenTelemetry.csproj", "{ECDE2121-39FC-460E-9D5C-64A097474D7B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0F858AA-20DD-4433-81CD-593D4D541C7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0F858AA-20DD-4433-81CD-593D4D541C7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0F858AA-20DD-4433-81CD-593D4D541C7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0F858AA-20DD-4433-81CD-593D4D541C7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{827EF32E-3677-43CD-9FE1-2B9322D406B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{827EF32E-3677-43CD-9FE1-2B9322D406B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{827EF32E-3677-43CD-9FE1-2B9322D406B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{827EF32E-3677-43CD-9FE1-2B9322D406B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F39C52F3-39BA-4244-B7F2-F47CDD564791}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F39C52F3-39BA-4244-B7F2-F47CDD564791}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F39C52F3-39BA-4244-B7F2-F47CDD564791}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F39C52F3-39BA-4244-B7F2-F47CDD564791}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECDE2121-39FC-460E-9D5C-64A097474D7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECDE2121-39FC-460E-9D5C-64A097474D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECDE2121-39FC-460E-9D5C-64A097474D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECDE2121-39FC-460E-9D5C-64A097474D7B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C0F858AA-20DD-4433-81CD-593D4D541C7D} = {F06DB55C-E783-4AFA-9E61-732DF76E344E}
+		{827EF32E-3677-43CD-9FE1-2B9322D406B9} = {F06DB55C-E783-4AFA-9E61-732DF76E344E}
+		{F39C52F3-39BA-4244-B7F2-F47CDD564791} = {F06DB55C-E783-4AFA-9E61-732DF76E344E}
+		{ECDE2121-39FC-460E-9D5C-64A097474D7B} = {F06DB55C-E783-4AFA-9E61-732DF76E344E}
+	EndGlobalSection
+EndGlobal

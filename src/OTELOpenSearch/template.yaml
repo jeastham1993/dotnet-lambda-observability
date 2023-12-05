@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: Deploy a .NET 6 Lambda function behind an API Gateway HTTP API with DynamoDB permissions
+
+Globals:
+  Function:
+    CodeUri: ./src/OtelLambda
+    Timeout: 29
+    MemorySize: 2048
+    Runtime: dotnet6
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref OrdersTable
+        OPEN_SEARCH_ENDPOINT: "https://otel-collector-gm4zok74s4odloob3m5msbvdoe.eu-west-1.osis.amazonaws.com/entry-pipeline/v1/traces"
+        POWERTOOLS_SERVICE_NAME: Orders
+
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: OtelLambda::OtelLambda.Function_FunctionHandler_Generated::FunctionHandler
+      Environment: 
+        Variables: 
+          SERVICE_NAME: "GetFunction"
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref OrdersTable
+        - Statement:
+            - Effect: Allow
+              Action: osis:Ingest
+              Resource: "arn:aws:osis:eu-west-1:521936459218:pipeline/otel-collector"
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /{input}
+            Method: get
+
+  PostFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: OtelLambda::OtelLambda.Function_PostHandler_Generated::PostHandler
+      Environment:
+        Variables:
+          SERVICE_NAME: "PostFunction"
+          QUEUE_URL: !Ref NewMessageQueue
+      Policies:
+        - DynamoDBWritePolicy:
+            TableName: !Ref OrdersTable
+        - SQSSendMessagePolicy:
+            QueueName: !GetAtt NewMessageQueue.QueueName
+        - Statement:
+            - Effect: Allow
+              Action: osis:Ingest
+              Resource: "arn:aws:osis:eu-west-1:521936459218:pipeline/otel-collector"
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /{input}/{value}
+            Method: post
+
+  OrdersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Orders
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
+      
+  NewMessageQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt NewMessageDLQ.Arn
+        maxReceiveCount: 3
+    
+  NewMessageDLQ:
+    Type: AWS::SQS::Queue
+
+  QueueProcessorFunction: 
+    Type: AWS::Serverless::Function 
+    Properties: 
+      CodeUri: ./src/OtelQueueProcessor
+      Handler: OtelQueueProcessor::OtelQueueProcessor.Function_QueueProcessor_Generated::QueueProcessor
+      Environment:
+        Variables:
+          SERVICE_NAME: "QueueProcessor"
+      Runtime: dotnet6 
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: osis:Ingest
+              Resource: "arn:aws:osis:eu-west-1:521936459218:pipeline/otel-collector"
+      Events: 
+        ProcessMessages:
+          Type: SQS 
+          Properties: 
+            Queue: !GetAtt NewMessageQueue.Arn
+            BatchSize: 10
+            FunctionResponseTypes:
+              - ReportBatchItemFailures

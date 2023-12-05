@@ -10,4 +10,5 @@ This repository contains examples of tracing using Native AWS services and tooli
 
 - [Native AWS](./src/NativeAWS/README.md)
 - [Open Telemetry & Honeycomb](./src/OTEL/README.md)
+- [Open Telemetry to OpenSearch using OpenSearch Ingestion Pipelines](./src/OTELOpenSearch/README.md)
 - [Lambda PowerTools](./src/PowerTools/)
