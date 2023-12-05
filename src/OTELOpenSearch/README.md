@@ -1,3 +1,5 @@
+**IMPORTANT! This code is not ready for use in production**
+
 # Tracing with Open Telemetry
 
 The examples here cover how to trace your serverless applications using Open Telemetry.
@@ -9,6 +11,100 @@ The sample application takes a user creation request from API Gateway, stores th
 These SQS queue is configured to trigger a Lambda function. The Lambda function then processes the message, simulating the work using a 5 second delay.
 
 All of the OpenTelemetry setup and processing logic is moved into a `Serverless.OpenTelemetry` package.
+
+The Lambda function IAM role needs to have `osis:Ingest` permissions for the ARN of the Ingestion pipeline resource, an example of this can be seen in the SAM template.
+
+The .NET OpenTelemetry exporter uses a HttpRequestHandler to SigV4 sign the requests being sent to the OpenSearch Ingestion Pipeline endpoint.
+
+``` c#
+namespace Serverless.OpenTelemetry;
+
+using Amazon.Runtime;
+using Amazon.Util;
+
+using AwsSignatureVersion4.Private;
+
+public class SignedRequestHandler : DelegatingHandler
+{
+    private static readonly KeyValuePair<string, IEnumerable<string>>[] EmptyRequestHeaders =
+        Array.Empty<KeyValuePair<string, IEnumerable<string>>>();
+
+    public SignedRequestHandler()
+    {
+        this.InnerHandler = new HttpClientHandler();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        RemoveHeaders(request);
+
+        var credentials = new ImmutableCredentials(
+            // These environment variables are set by the Lambda environment and do not need to be passed to the function
+            // They will not be visible in the Lambda console, or by the application
+            // DO NOT write them to logs.
+            Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+            Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
+            Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
+
+        await Signer.SignAsync(
+            request,
+            null,
+            null,
+            DateTime.Now,
+            Environment.GetEnvironmentVariable("AWS_REGION"),
+            "osis",
+            credentials);
+
+        return await base.SendAsync(
+                request,
+                cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    protected override HttpResponseMessage Send(
+        HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        RemoveHeaders(request);
+
+        var credentials = new ImmutableCredentials(
+            // These environment variables are set by the Lambda environment and do not need to be passed to the function
+            // They will not be visible in the Lambda console, or by the application
+            // DO NOT write them to logs.
+            Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+            Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
+            Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
+
+        Signer.Sign(
+            request,
+            null,
+            null,
+            DateTime.Now,
+            Environment.GetEnvironmentVariable("AWS_REGION"),
+            "osis",
+            credentials);
+
+        return base.Send(
+            request,
+            cancellationToken);
+    }
+
+    /// <summary>
+    /// Given the idempotent nature of message handlers, lets remove request headers that
+    /// might have been added by an prior attempt to send the request.
+    /// </summary>
+    private static void RemoveHeaders(HttpRequestMessage request)
+    {
+        request.Headers.Remove(HeaderKeys.AuthorizationHeader);
+        request.Headers.Remove(HeaderKeys.XAmzContentSha256Header);
+        request.Headers.Remove(HeaderKeys.XAmzDateHeader);
+        request.Headers.Remove(HeaderKeys.XAmzSecurityTokenHeader);
+    }
+}
+```
 
 ## Pre Requisites
 - .NET 6

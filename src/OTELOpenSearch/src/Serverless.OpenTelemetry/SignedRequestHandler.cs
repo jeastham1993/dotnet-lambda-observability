@@ -23,6 +23,9 @@ public class SignedRequestHandler : DelegatingHandler
         RemoveHeaders(request);
 
         var credentials = new ImmutableCredentials(
+            // These environment variables are set by the Lambda environment and do not need to be passed to the function
+            // They will not be visible in the Lambda console, or by the application
+            // DO NOT write them to logs.
             Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
             Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
             Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
@@ -32,7 +35,7 @@ public class SignedRequestHandler : DelegatingHandler
             null,
             null,
             DateTime.Now,
-            "eu-west-1",
+            Environment.GetEnvironmentVariable("AWS_REGION"),
             "osis",
             credentials);
 
@@ -49,6 +52,9 @@ public class SignedRequestHandler : DelegatingHandler
         RemoveHeaders(request);
 
         var credentials = new ImmutableCredentials(
+            // These environment variables are set by the Lambda environment and do not need to be passed to the function
+            // They will not be visible in the Lambda console, or by the application
+            // DO NOT write them to logs.
             Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
             Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
             Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
@@ -58,7 +64,7 @@ public class SignedRequestHandler : DelegatingHandler
             null,
             null,
             DateTime.Now,
-            "eu-west-1",
+            Environment.GetEnvironmentVariable("AWS_REGION"),
             "osis",
             credentials);
 
